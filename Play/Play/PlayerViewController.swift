@@ -130,17 +130,36 @@ class PlayerViewController: UIViewController {
         let track = tracks[currentIndex]
         let url = NSURL(string: "https://api.soundcloud.com/tracks/\(track.id)/stream?client_id=\(clientID)")!
         // FILL ME IN
-    
+        let playForTheFirstTime = AVPlayerItem(URL:track.getURL()) //which url?! url or track.getURL()
+        if (track.hasPlayed == false) { // what am i supposed to be checking for here..?!
+            player.replaceCurrentItemWithPlayerItem(playForTheFirstTime)
+            track.hasPlayed = true
+        }
+        if player.rate == 0 && player.error == nil {
+            sender.selected = !sender.selected
+            player.play()
+        } else {
+            sender.selected = !sender.selected
+            player.pause()
+        }
     }
     
-    /* 
+    /*
      * Called when the next button is tapped. It should check if there is a next
      * track, and if so it will load the next track's data and
      * automatically play the song if a song is already playing
      * Remember to update the currentIndex
      */
     func nextTrackTapped(sender: UIButton) {
-    
+        if (currentIndex + 1 < tracks.count) {
+            currentIndex = currentIndex + 1
+            let nextTrack = tracks[currentIndex]
+            let nextTrackURL = AVPlayerItem(URL: nextTrack.getURL())
+            player.replaceCurrentItemWithPlayerItem(nextTrackURL)
+            asyncLoadTrackImage(nextTrack)
+            titleLabel.text = nextTrack.title
+            artistLabel.text = nextTrack.artist
+        }
     }
 
     /*
@@ -154,7 +173,21 @@ class PlayerViewController: UIViewController {
      */
 
     func previousTrackTapped(sender: UIButton) {
-    
+        let floatTime = Float(CMTimeGetSeconds(player.currentTime()))
+        if floatTime > 3 || currentIndex == 0 {
+            let replay = CMTimeMake(0,1)
+            player.currentItem?.seekToTime(replay)
+        } else {
+            if currentIndex - 1 > -1 {
+                currentIndex = currentIndex - 1
+                let previousTrack = tracks[currentIndex]
+                let previousTrackURL = AVPlayerItem(URL: previousTrack.getURL())
+                player.replaceCurrentItemWithPlayerItem(previousTrackURL)
+                asyncLoadTrackImage(previousTrack)
+                titleLabel.text = previousTrack.title
+                artistLabel.text = previousTrack.artist
+            }
+        }
     }
     
     
