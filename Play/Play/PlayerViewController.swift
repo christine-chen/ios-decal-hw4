@@ -130,12 +130,12 @@ class PlayerViewController: UIViewController {
         let track = tracks[currentIndex]
         let url = NSURL(string: "https://api.soundcloud.com/tracks/\(track.id)/stream?client_id=\(clientID)")!
         // FILL ME IN
-        let playForTheFirstTime = AVPlayerItem(URL:track.getURL()) //which url?! url or track.getURL()
-        if (track.hasPlayed == false) { // what am i supposed to be checking for here..?!
+        let playForTheFirstTime = AVPlayerItem(URL:url)
+        if (player.currentItem == nil) {
             player.replaceCurrentItemWithPlayerItem(playForTheFirstTime)
-            track.hasPlayed = true
+
         }
-        if player.rate == 0 && player.error == nil {
+        if player.rate == 0 {
             sender.selected = !sender.selected
             player.play()
         } else {
